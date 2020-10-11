@@ -8,8 +8,7 @@ import (
 	"strings"
 )
 
-func QuerySelector(doc *html.Node, tag string, attr string, val string) (nodes []*html.Node, err error, count int) {
-	count = 0
+func QuerySelector(doc *html.Node, tag string, attr string, val string) (nodes []*html.Node, err error) {
 	var crawler func(*html.Node)
 	crawler = func(node *html.Node) {
 		if node.Type == html.ElementNode && node.Data == tag {
@@ -17,7 +16,6 @@ func QuerySelector(doc *html.Node, tag string, attr string, val string) (nodes [
 				if a.Key == attr {
 					if strings.Contains(a.Val, val) == true {
 						nodes = append(nodes, node)
-						count++
 						return
 					}
 				}
@@ -30,18 +28,16 @@ func QuerySelector(doc *html.Node, tag string, attr string, val string) (nodes [
 	}
 	crawler(doc)
 	if nodes != nil {
-		return nodes, nil, count
+		return nodes, nil
 	}
-	return nil, errors.New("Missing " + tag + " with " + attr + " = " + val), count
+	return nil, errors.New("Missing " + tag + " with " + attr + " = " + val)
 }
 
-func GetGeneralTags(doc *html.Node, tag string) (nodes []*html.Node, err error, count int) {
-	count = 0
+func GetGeneralTags(doc *html.Node, tag string) (nodes []*html.Node, err error) {
 	var crawler func(*html.Node)
 	crawler = func(node *html.Node) {
 		if node.Type == html.ElementNode && node.Data == tag {
 				nodes = append(nodes, node)
-                count++
 		}
 		for child := node.FirstChild; child != nil; child = child.NextSibling {
 			crawler(child)
@@ -49,9 +45,9 @@ func GetGeneralTags(doc *html.Node, tag string) (nodes []*html.Node, err error, 
 	}
 	crawler(doc)
 	if nodes != nil {
-		return nodes, nil, count
+		return nodes, nil
 	}
-	return nil, errors.New("Missing" + tag + "in the node tree"), count
+	return nil, errors.New("Missing" + tag + "in the node tree")
 }
 
 func GetNodeText(doc io.Reader, tag string) (nodes []byte) {
@@ -88,8 +84,7 @@ func GetNodeText(doc io.Reader, tag string) (nodes []byte) {
 	}
 }
 
-func GetValueAttr(doc *html.Node, tag string, attr string) (nodes [][]byte, err error, count int) {
-	count = 0
+func GetValueAttr(doc *html.Node, tag string, attr string) (nodes [][]byte, err error) {
 	var crawler func(*html.Node)
 	crawler = func(node *html.Node) {
 		if node.Type == html.ElementNode && node.Data == tag {
@@ -98,7 +93,6 @@ func GetValueAttr(doc *html.Node, tag string, attr string) (nodes [][]byte, err 
 					//nodes = append(nodes, []byte(a.Val)...)
 					//nodes = append(nodes, []byte("\n"))
 					nodes = append(nodes, []byte(a.Val))
-					count++
 					return
 				}
 
@@ -110,9 +104,9 @@ func GetValueAttr(doc *html.Node, tag string, attr string) (nodes [][]byte, err 
 	}
 	crawler(doc)
 	if nodes != nil {
-		return nodes, nil, count
+		return nodes, nil
 	}
-	return nil, errors.New("Missing \"value\" in the attribute tag"), count
+	return nil, errors.New("Missing \"value\" in the attribute tag")
 }
 
 func RenderNode(n *html.Node) string {
