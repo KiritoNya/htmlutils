@@ -50,7 +50,9 @@ func GetGeneralTags(doc *html.Node, tag string) (nodes []*html.Node, err error) 
 	return nil, errors.New("Missing" + tag + "in the node tree")
 }
 
-func GetNodeText(doc io.Reader, tag string) (nodes []byte) {
+func GetNodeText(node *html.Node, tag string) (nodes []byte) {
+
+	doc := strings.NewReader(RenderNode(node))
 
 	z := html.NewTokenizer(doc)
 
