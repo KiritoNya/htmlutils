@@ -111,6 +111,46 @@ func GetValueAttr(doc *html.Node, tag string, attr string) (nodes [][]byte, err 
 	return nil, errors.New("Missing \"value\" in the attribute tag")
 }
 
+func TagCount(doc *html.Node, tag string) (num int, err error) {
+	var crawler func(*html.Node)
+
+	crawler = func(node *html.Node) {
+		if node.Type == html.ElementNode && node.Data == tag {
+			num++
+		}
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			crawler(child)
+		}
+	}
+	crawler(doc)
+	if num != 0 {
+		return num, nil
+	}
+	return -1, errors.New("Missing" + tag + "in the node tree")
+}
+
+func CurrentTag(doc *html.Node) (currTag string, err error) {
+	
+	var crawler func(*html.Node)
+
+	crawler = func(node *html.Node) {
+		if node.Type == html.ElementNode {
+			if node.Data != "html" && node.Data != "head" && node.Data != "body" {
+				currTag = node.Data
+				return
+			}
+		}
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			crawler(child)
+		}
+	}
+	crawler(doc)
+	if currTag != "" {
+		return currTag, nil
+	}
+	return "", errors.New("Missing current tag in the node tree")
+}
+
 func RenderNode(n *html.Node) string {
 	var buf bytes.Buffer
 	w := io.Writer(&buf)
