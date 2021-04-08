@@ -50,6 +50,18 @@ func GetGeneralTags(doc *html.Node, tag string) (nodes []*html.Node, err error) 
 	return nil, errors.New("Missing" + tag + "in the node tree")
 }
 
+func GetGeneralTagsSingle(node *html.Node, tag string) (nodes []*html.Node, err error) {
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
+		if child.Type == html.ElementNode && child.Data == tag {
+			nodes = append(nodes, child)
+		}
+	}
+	if nodes != nil {
+		return nodes, nil
+	}
+	return nil, errors.New("Missing" + tag + "in the node tree")
+}
+
 func GetNodeText(node *html.Node, tag string) (nodes []byte) {
 
 	doc := strings.NewReader(RenderNode(node))
