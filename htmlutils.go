@@ -14,9 +14,16 @@ func QuerySelector(doc *html.Node, tag string, attr string, val string) (nodes [
 		if node.Type == html.ElementNode && node.Data == tag {
 			for _, a := range node.Attr {
 				if a.Key == attr {
-					if strings.Contains(a.Val, val) == true {
-						nodes = append(nodes, node)
-						return
+					if strings.Contains(a.Val, " ") {
+						if strings.Contains(a.Val, val) == true {
+							nodes = append(nodes, node)
+							return
+						}
+					} else {
+						if a.Val == val {
+							nodes = append(nodes, node)
+							return
+						}
 					}
 				}
 
@@ -44,18 +51,6 @@ func GetGeneralTags(doc *html.Node, tag string) (nodes []*html.Node, err error) 
 		}
 	}
 	crawler(doc)
-	if nodes != nil {
-		return nodes, nil
-	}
-	return nil, errors.New("Missing" + tag + "in the node tree")
-}
-
-func GetGeneralTagsSingle(node *html.Node, tag string) (nodes []*html.Node, err error) {
-	for child := node.FirstChild; child != nil; child = child.NextSibling {
-		if child.Type == html.ElementNode && child.Data == tag {
-			nodes = append(nodes, child)
-		}
-	}
 	if nodes != nil {
 		return nodes, nil
 	}
